@@ -22,5 +22,12 @@ public class CustomerService {
 		
 		return customerRepo.findAll();
 	}
+	
+	public CustomerData saveCustData(CustomerData custData) {
+		CustomerData savedCustData = customerRepo.save(custData);
+		savedCustData.formatCustomerId();  // Generate formatted ID
+		return savedCustData;
+		
+	}
 
 }

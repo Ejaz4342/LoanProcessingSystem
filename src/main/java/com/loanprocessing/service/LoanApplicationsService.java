@@ -20,13 +20,33 @@ public class LoanApplicationsService {
 
 	@Autowired
 	private CustomerRepository customerRepo;
+	
+	CustomerData  customer;
 
+	
 	public LoanApplications submitApplication(LoanApplicationsDto dto) {
 		
-		CustomerData customer= customerRepo.findById(dto.getCustomerId())
+	
+	if(dto.getCustomerId() !=null) {
+		// Existing customer
+		 customer= customerRepo.findById(dto.getCustomerId())
 				.orElseThrow(()-> new ResourceNotFoundException("Customer Not Found"));
+	}else {
 		
-		
+		CustomerData newCustomerData = new CustomerData();
+		newCustomerData.setName(dto.getCustomer().getName());
+		newCustomerData.setPan(dto.getCustomer().getPan());
+		newCustomerData.setAadhar(dto.getCustomer().getAadhar());
+		newCustomerData.setAddressLine(dto.getCustomer().getAddressLine());
+		newCustomerData.setCity(dto.getCustomer().getCity());
+		newCustomerData.setDistrict(dto.getCustomer().getDistrict());
+		newCustomerData.setSzstate(dto.getCustomer().getSzstate());
+		newCustomerData.setNetMonthlyIncome(dto.getCustomer().getNetMonthlyIncome());
+		newCustomerData.setObligation(dto.getCustomer().getObligation());
+		customer = customerRepo.save(newCustomerData);
+	}
+	
+	// Now save the loan application with the associated customer
 		LoanApplications application=new LoanApplications();
 		application.setCustomerData(customer);
 		application.setApplicationDate(new Date());
@@ -34,6 +54,7 @@ public class LoanApplicationsService {
 		application.setLoanAmount(dto.getLoanAmount());
 		application.setLoanTerm(dto.getLoanTerm());
 		application.setInterestRate(dto.getInterestRate());
+	
 		
 		return loanApplicationRepo.save(application);
 		

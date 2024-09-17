@@ -1,10 +1,21 @@
 package com.loanprocessing.model;
 
+import java.math.BigDecimal;
+
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Transient;
+
 @jakarta.persistence.Entity
 @jakarta.persistence.Table(name = "CUSTOMER_DATA")
 public class CustomerData {
 
-    @jakarta.persistence.Id
+   @Id
+   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_id_seq")
+   @SequenceGenerator(name="customer_id_seq", sequenceName = "CUSTOMER_ID_SEQ", allocationSize = 1)
     private Long customerId;
     private String name;
     private String pan;
@@ -13,8 +24,24 @@ public class CustomerData {
     private String district;
     private String city;
     private String addressLine;
-    private Double netMonthlyIncome;
-    private Double obligation;
+    private BigDecimal netMonthlyIncome;
+    
+    @PostPersist
+    public void formatCustomerId() {
+        this.formattedCustomerId = "cust" + String.format("%03d", this.customerId);
+    }
+    
+    public String getFormattedCustomerId() {
+		return formattedCustomerId;
+	}
+
+	public void setFormattedCustomerId(String formattedCustomerId) {
+		this.formattedCustomerId = formattedCustomerId;
+	}
+
+	private Double obligation;
+    @Transient
+    private String formattedCustomerId;
 
     // Getters and Setters
 
@@ -82,12 +109,12 @@ public class CustomerData {
         this.addressLine = addressLine;
     }
 
-    public Double getNetMonthlyIncome() {
+    public BigDecimal getNetMonthlyIncome() {
         return netMonthlyIncome;
     }
 
-    public void setNetMonthlyIncome(Double netMonthlyIncome) {
-        this.netMonthlyIncome = netMonthlyIncome;
+    public void setNetMonthlyIncome(BigDecimal bigDecimal) {
+        this.netMonthlyIncome = bigDecimal;
     }
 
     public Double getObligation() {
